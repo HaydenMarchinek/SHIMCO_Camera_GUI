@@ -347,7 +347,7 @@ class Ui_Form(object):
     
     def capture_images(self):
         if not hasattr(self, 'image_handle'):
-            initial_image = np.zeros((50,50))
+            initial_image = np.zeros((1024,1024))
             self.image_handle = self.ax.imshow(initial_image, 
                                                interpolation='nearest', 
                                                cmap='Blues',
@@ -374,7 +374,7 @@ class Ui_Form(object):
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                     filename = f"{target_name}_{current_time}"    
                     file_path = os.path.join(PATHTOIMAGEFOLDER, filename)
-                    image.tofile(file_path + '.FITS')
+                    np.savez_compressed(file_path, array = image)
         
                 cam1.stop_acquisition()
             except Exception as e:

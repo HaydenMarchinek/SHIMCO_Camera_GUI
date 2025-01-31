@@ -41,7 +41,7 @@ class CaptureSeriesThread(QThread):
                 Images = []
                 num_exposures, exposure_time, file_name = command
                 for exposure in range(num_exposures):
-                    image = np.random.rand(2048, 1024)
+                    image = np.random.randint(1,100,size =(1024,1024))
                     Images.append(image)
                     self.update_image.emit(image)
                     sleep_time = exposure_time
@@ -52,7 +52,7 @@ class CaptureSeriesThread(QThread):
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                     filename = f"Simulated_Image_{current_time}"    
                     file_path = os.path.join(PATHTOIMAGEFOLDER, filename)
-                    img.tofile(file_path + '.bin')
+                    np.savez_compressed(file_path, array = img)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -310,7 +310,7 @@ class Ui_Form(object):
     
     def capture_images(self):
         if not hasattr(self, 'image_handle'):
-            initial_image = np.zeros((50, 50))
+            initial_image = np.zeros((1024, 1024))
             self.image_handle = self.ax.imshow(initial_image, 
                                                interpolation='nearest', 
                                                cmap='Blues',
@@ -324,7 +324,8 @@ class Ui_Form(object):
     
             if not self.stop:
                 exposure_time = int(self.ExpS.text())/1000
-                image = np.random.rand(50, 50)
+                image = np.random.rand(1024, 1024, type = int)
+                np.savez_compressed(PATHTOIMAGEFOLDER, array = image)
                 self.image_handle.set_data(image)
                 self.image_handle.set_clim(0,np.max(image))
                 self.canvas.draw_idle()
@@ -371,6 +372,7 @@ class Ui_Form(object):
             self.image_handle = self.ax.imshow(image, interpolation='nearest')
         else:
             self.image_handle.set_data(image)
+            self.image_handle.set_clim(0,np.max(image))
     
         self.canvas.draw_idle()
     
